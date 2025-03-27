@@ -89,7 +89,7 @@ export default function AdminDashboardPage() {
   )
 
   // Format time in seconds to a readable format
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     if (seconds < 60) {
       return `${seconds}s`
     } else {
