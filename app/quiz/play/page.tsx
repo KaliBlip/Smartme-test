@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Brain, Clock, ArrowRight, CheckCircle, XCircle } from "lucide-react"
+import { Brain, Clock, ArrowRight, CheckCircle, XCircle, GraduationCap } from "lucide-react"
 import { generateQuestions } from "@/lib/quiz-generator"
 import type { Question } from "@/lib/types"
 
@@ -112,8 +112,8 @@ export default function PlayQuizPage() {
             <div className="flex items-center gap-2">
               <Link href="/">
                 <div className="flex items-center gap-2">
-                  <Brain className="h-8 w-8 text-primary" />
-                  <h1 className="text-2xl font-bold">BYTEBATTLE</h1>
+                  <GraduationCap className="h-8 w-8 text-primary" />
+                  <h1 className="text-2xl font-bold">SMARTME TEST</h1>
                 </div>
               </Link>
             </div>
@@ -122,7 +122,7 @@ export default function PlayQuizPage() {
 
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Brain className="h-16 w-16 text-primary mx-auto animate-pulse" />
+            <GraduationCap className="h-16 w-16 text-primary mx-auto animate-pulse" />
             <h2 className="text-2xl font-bold mt-4">Generating Your Quiz...</h2>
             <p className="text-muted-foreground mt-2">Our AI is crafting challenging questions just for you</p>
           </div>
@@ -141,8 +141,8 @@ export default function PlayQuizPage() {
             <div className="flex items-center gap-2">
               <Link href="/">
                 <div className="flex items-center gap-2">
-                  <Brain className="h-8 w-8 text-primary" />
-                  <h1 className="text-2xl font-bold">BYTEBATTLE</h1>
+                  <GraduationCap className="h-8 w-8 text-primary" />
+                  <h1 className="text-2xl font-bold">SMARTME TEST</h1>
                 </div>
               </Link>
             </div>
@@ -224,8 +224,8 @@ export default function PlayQuizPage() {
           <div className="flex items-center gap-2">
             <Link href="/">
               <div className="flex items-center gap-2">
-                <Brain className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">BYTEBATTLE</h1>
+                <GraduationCap className="h-8 w-8 text-primary" />
+                <h1 className="text-2xl font-bold">SMARTME TEST</h1>
               </div>
             </Link>
           </div>

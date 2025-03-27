@@ -7,9 +7,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "BYTEBATTLE - AI-Powered Quiz App",
-  description: "Challenge yourself with AI-generated quizzes across various categories",
-    generator: 'v0.dev'
+  title: "SmartMe Test",
+  description: "Academic quiz application for JHS and SHS students",
 }
 
 export default function RootLayout({

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Brain } from "lucide-react"
+import { GraduationCap } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -53,8 +53,8 @@ export default function LoginPage() {
           <div className="flex items-center gap-2">
             <Link href="/">
               <div className="flex items-center gap-2">
-                <Brain className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">BYTEBATTLE</h1>
+                <GraduationCap className="h-8 w-8 text-primary" />
+                <h1 className="text-2xl font-bold">SMARTME TEST</h1>
               </div>
             </Link>
           </div>
@@ -133,11 +133,11 @@ export default function LoginPage() {
       <footer className="bg-muted/30 border-t py-8">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Brain className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">BYTEBATTLE</span>
+            <GraduationCap className="h-6 w-6 text-primary" />
+            <span className="text-xl font-bold">SMARTME TEST</span>
           </div>
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} BYTEBATTLE. All rights reserved.
+            &copy; {new Date().getFullYear()} SMARTME TEST. All rights reserved.
           </p>
         </div>
       </footer>
