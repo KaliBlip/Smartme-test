@@ -59,21 +59,21 @@ export default function NewQuestionPage() {
   const subjectOptions = level === "JHS" ? jhsSubjects : shsSubjects
 
   // Handle option changes for current question
-  const handleOptionChange = (index: number, value: string) => {
+  const handleOptionChange = (index: number, value: string): void => {
     const newOptions = [...options]
     newOptions[index] = value
     setOptions(newOptions)
   }
 
   // Add a new option (maximum 6)
-  const addOption = () => {
+  const addOption = (): void => {
     if (options.length < 6) {
       setOptions([...options, ""])
     }
   }
 
   // Remove an option (minimum 2)
-  const removeOption = (index: number) => {
+  const removeOption = (index: number): void => {
     if (options.length > 2) {
       // Update the correct answer index if needed
       if (correctAnswerIndex === index) {
@@ -82,7 +82,7 @@ export default function NewQuestionPage() {
         setCorrectAnswerIndex(correctAnswerIndex - 1)
       }
 
-      const newOptions = options.filter((_, i) => i !== index)
+      const newOptions = options.filter((_, i: number) => i !== index)
       setOptions(newOptions)
     }
   }
@@ -262,7 +262,7 @@ export default function NewQuestionPage() {
                       max={180}
                       step={5}
                       value={[timeLimit]}
-                      onValueChange={(values) => setTimeLimit(values[0])}
+                      onValueChange={(values: number[]) => setTimeLimit(values[0])}
                       className="py-4"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">

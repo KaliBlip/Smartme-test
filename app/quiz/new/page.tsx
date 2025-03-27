@@ -74,7 +74,7 @@ export default function NewQuizPage() {
   }
 
   // Format time in minutes and seconds
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     if (seconds === 0) return "No time limit"
     if (seconds < 60) return `${seconds} seconds`
     
@@ -258,7 +258,7 @@ export default function NewQuizPage() {
                       max={180}
                       step={15}
                       value={[selectedTimeLimit]}
-                      onValueChange={(values) => setSelectedTimeLimit(values[0])}
+                      onValueChange={(values: number[]) => setSelectedTimeLimit(values[0])}
                       className="py-4"
                     />
                     
