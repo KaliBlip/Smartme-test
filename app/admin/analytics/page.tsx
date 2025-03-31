@@ -1,7 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Select,
   SelectContent,
@@ -9,17 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  BookOpen,
-  Clock,
-  GraduationCap,
-  School,
-  Users,
-} from "lucide-react"
-import { useState } from "react"
+import { Progress } from "@/components/ui/progress"
+import { ArrowDown, ArrowUp, Clock, Users, FileQuestion, Trophy, CheckCircle } from "lucide-react"
 
 // Mock data for analytics
 const performanceData = {
@@ -47,14 +39,14 @@ const performanceData = {
 }
 
 export default function AnalyticsPage() {
-  const [timeRange, setTimeRange] = useState("month")
+  const [timeRange, setTimeRange] = useState("week")
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold">Analytics</h1>
-          <p className="text-muted-foreground">Track student performance and system usage</p>
+          <p className="text-muted-foreground">Track performance and usage metrics</p>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger className="w-[180px]">
@@ -70,120 +62,177 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{performanceData.totalUsers}</div>
-            <div className="flex items-center pt-1 text-xs text-green-500">
+            <div className="text-2xl font-bold">1,234</div>
+            <div className="flex items-center text-xs text-green-500">
               <ArrowUp className="h-4 w-4 mr-1" />
-              {performanceData.recentTrends.users} from last month
+              +12% from last {timeRange}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Quizzes</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Questions</CardTitle>
+            <FileQuestion className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{performanceData.totalQuizzes}</div>
-            <div className="flex items-center pt-1 text-xs text-green-500">
+            <div className="text-2xl font-bold">2,543</div>
+            <div className="flex items-center text-xs text-green-500">
               <ArrowUp className="h-4 w-4 mr-1" />
-              {performanceData.recentTrends.quizzes} from last month
+              Added 145 this {timeRange}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Quizzes Taken</CardTitle>
+            <Trophy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{performanceData.averageScore}%</div>
-            <div className="flex items-center pt-1 text-xs text-green-500">
+            <div className="text-2xl font-bold">12,789</div>
+            <div className="flex items-center text-xs text-green-500">
               <ArrowUp className="h-4 w-4 mr-1" />
-              {performanceData.recentTrends.scores} from last month
+              +23% from last {timeRange}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Avg. Score</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{performanceData.completionRate}%</div>
-            <p className="text-xs text-muted-foreground pt-1">Of quizzes started</p>
+            <div className="text-2xl font-bold">76%</div>
+            <div className="flex items-center text-xs text-green-500">
+              <ArrowUp className="h-4 w-4 mr-1" />
+              +2% from last {timeRange}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Detailed Analytics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Subject Performance */}
-        <Card className="col-span-4">
+      {/* Performance Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
           <CardHeader>
             <CardTitle>Subject Performance</CardTitle>
             <CardDescription>Average scores by subject and level</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-8">
-              {Object.entries(performanceData.subjectPerformance).map(([subject, levels]) => (
-                <div key={subject} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium leading-none">{subject}</p>
-                      <p className="text-sm text-muted-foreground">JHS vs SHS Performance</p>
+            <div className="space-y-6">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium">Mathematics</span>
+                  <span className="text-sm text-muted-foreground">82%</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs text-muted-foreground">JHS</span>
+                      <span className="text-xs text-muted-foreground">78%</span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <School className="h-4 w-4 text-blue-500" />
-                        <span className="font-medium">{levels.jhs}%</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <GraduationCap className="h-4 w-4 text-purple-500" />
-                        <span className="font-medium">{levels.shs}%</span>
-                      </div>
-                    </div>
+                    <Progress value={78} className="h-2" />
                   </div>
-                  <div className="h-2 rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
-                      style={{ width: `${(levels.jhs + levels.shs) / 2}%` }}
-                    />
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs text-muted-foreground">SHS</span>
+                      <span className="text-xs text-muted-foreground">86%</span>
+                    </div>
+                    <Progress value={86} className="h-2" />
                   </div>
                 </div>
-              ))}
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium">Science</span>
+                  <span className="text-sm text-muted-foreground">75%</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs text-muted-foreground">JHS</span>
+                      <span className="text-xs text-muted-foreground">72%</span>
+                    </div>
+                    <Progress value={72} className="h-2" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs text-muted-foreground">SHS</span>
+                      <span className="text-xs text-muted-foreground">78%</span>
+                    </div>
+                    <Progress value={78} className="h-2" />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium">English</span>
+                  <span className="text-sm text-muted-foreground">68%</span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs text-muted-foreground">JHS</span>
+                      <span className="text-xs text-muted-foreground">65%</span>
+                    </div>
+                    <Progress value={65} className="h-2" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs text-muted-foreground">SHS</span>
+                      <span className="text-xs text-muted-foreground">71%</span>
+                    </div>
+                    <Progress value={71} className="h-2" />
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Time Distribution */}
-        <Card className="col-span-3">
+        <Card>
           <CardHeader>
-            <CardTitle>Quiz Duration Distribution</CardTitle>
-            <CardDescription>Time spent on quizzes</CardDescription>
+            <CardTitle>Quiz Duration</CardTitle>
+            <CardDescription>Average time spent on quizzes</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {Object.entries(performanceData.timeDistribution).map(([range, percentage]) => (
-                <div key={range} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <p className="font-medium">{range}</p>
-                    <p className="text-muted-foreground">{percentage}%</p>
-                  </div>
-                  <div className="h-2 rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
+            <div className="space-y-6">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium">Mathematics</span>
+                  <span className="text-sm text-muted-foreground">8.5 min</span>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3 w-3 text-muted-foreground" />
+                  <Progress value={85} className="h-2" />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium">Science</span>
+                  <span className="text-sm text-muted-foreground">7.2 min</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3 w-3 text-muted-foreground" />
+                  <Progress value={72} className="h-2" />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium">English</span>
+                  <span className="text-sm text-muted-foreground">6.8 min</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3 w-3 text-muted-foreground" />
+                  <Progress value={68} className="h-2" />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

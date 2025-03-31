@@ -21,80 +21,70 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import {
-  Check,
-  Edit,
-  MoreVertical,
-  Plus,
-  Search,
-  Trash,
-  UserPlus,
-  X,
-} from "lucide-react"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Edit, MoreHorizontal, Plus, Search, Trash, UserCheck, UserX } from "lucide-react"
+import Link from "next/link"
 
 // Mock data for users
 const users = [
   {
-    id: "1",
+    id: "u1",
     name: "John Doe",
     email: "john@example.com",
-    role: "student",
+    role: "Student",
     level: "JHS",
-    status: "active",
-    joinDate: "2023-06-15",
-    quizzesTaken: 15,
-    avgScore: 85,
+    status: "Active",
+    joinDate: "2023-01-15",
+    quizzesTaken: 25,
+    averageScore: 85,
   },
   {
-    id: "2",
+    id: "u2",
     name: "Jane Smith",
     email: "jane@example.com",
-    role: "student",
+    role: "Student",
     level: "SHS",
-    status: "pending",
-    joinDate: "2023-06-10",
-    quizzesTaken: 8,
-    avgScore: 92,
+    status: "Active",
+    joinDate: "2023-02-20",
+    quizzesTaken: 18,
+    averageScore: 92,
   },
   {
-    id: "3",
-    name: "Mark Wilson",
-    email: "mark@example.com",
-    role: "admin",
+    id: "u3",
+    name: "Admin User",
+    email: "admin@example.com",
+    role: "Admin",
     level: "N/A",
-    status: "active",
-    joinDate: "2023-06-08",
+    status: "Active",
+    joinDate: "2023-01-01",
     quizzesTaken: 0,
-    avgScore: 0,
+    averageScore: 0,
   },
   {
-    id: "4",
-    name: "Sarah Johnson",
-    email: "sarah@example.com",
-    role: "student",
+    id: "u4",
+    name: "Bob Wilson",
+    email: "bob@example.com",
+    role: "Student",
     level: "JHS",
-    status: "active",
-    joinDate: "2023-06-05",
-    quizzesTaken: 12,
-    avgScore: 78,
+    status: "Pending",
+    joinDate: "2023-03-10",
+    quizzesTaken: 0,
+    averageScore: 0,
   },
   {
-    id: "5",
-    name: "Mike Brown",
-    email: "mike@example.com",
-    role: "student",
+    id: "u5",
+    name: "Alice Brown",
+    email: "alice@example.com",
+    role: "Student",
     level: "SHS",
-    status: "inactive",
-    joinDate: "2023-06-01",
+    status: "Inactive",
+    joinDate: "2023-02-05",
     quizzesTaken: 5,
-    avgScore: 65,
+    averageScore: 78,
   },
 ]
 
@@ -119,27 +109,29 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold">Users</h1>
-          <p className="text-muted-foreground">Manage students and administrative users</p>
+          <p className="text-muted-foreground">Manage user accounts and permissions</p>
         </div>
-        <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Add User
-        </Button>
+        <Link href="/admin/users/new">
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add User
+          </Button>
+        </Link>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>User Management</CardTitle>
-          <CardDescription>View and manage all system users</CardDescription>
+          <CardDescription>Browse and manage all user accounts</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
+            <div className="flex flex-col gap-4">
+              <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search users..."
@@ -148,54 +140,56 @@ export default function UsersPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="student">Student</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={levelFilter} onValueChange={setLevelFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Levels</SelectItem>
-                  <SelectItem value="JHS">JHS</SelectItem>
-                  <SelectItem value="SHS">SHS</SelectItem>
-                  <SelectItem value="N/A">N/A</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="Student">Student</SelectItem>
+                    <SelectItem value="Admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={levelFilter} onValueChange={setLevelFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Levels</SelectItem>
+                    <SelectItem value="JHS">JHS</SelectItem>
+                    <SelectItem value="SHS">SHS</SelectItem>
+                    <SelectItem value="N/A">N/A</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             {/* Users Table */}
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Level</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Quizzes</TableHead>
-                    <TableHead>Avg. Score</TableHead>
-                    <TableHead>Join Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="min-w-[200px]">Name</TableHead>
+                    <TableHead className="whitespace-nowrap">Email</TableHead>
+                    <TableHead className="whitespace-nowrap">Role</TableHead>
+                    <TableHead className="whitespace-nowrap">Level</TableHead>
+                    <TableHead className="whitespace-nowrap">Status</TableHead>
+                    <TableHead className="whitespace-nowrap">Quizzes</TableHead>
+                    <TableHead className="whitespace-nowrap">Avg. Score</TableHead>
+                    <TableHead className="whitespace-nowrap">Join Date</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -204,63 +198,53 @@ export default function UsersPage() {
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
-                        <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                        <Badge variant={user.role === "Admin" ? "destructive" : "default"}>
                           {user.role}
                         </Badge>
                       </TableCell>
-                      <TableCell>{user.level}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          {user.status === "active" ? (
-                            <Check className="h-4 w-4 text-green-500" />
-                          ) : user.status === "pending" ? (
-                            <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                        <Badge variant="outline">{user.level}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          {user.status === "Active" ? (
+                            <UserCheck className="h-3 w-3 text-green-500" />
+                          ) : user.status === "Pending" ? (
+                            <span className="h-3 w-3 rounded-full bg-yellow-500" />
                           ) : (
-                            <X className="h-4 w-4 text-red-500" />
+                            <UserX className="h-3 w-3 text-red-500" />
                           )}
-                          <span
-                            className={
-                              user.status === "active"
-                                ? "text-green-500"
-                                : user.status === "pending"
-                                ? "text-yellow-500"
-                                : "text-red-500"
-                            }
-                          >
-                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                          </span>
+                          <span>{user.status}</span>
                         </div>
                       </TableCell>
                       <TableCell>{user.quizzesTaken}</TableCell>
                       <TableCell>
-                        {user.avgScore > 0 ? (
-                          <Badge variant="outline">{user.avgScore}%</Badge>
-                        ) : (
-                          "-"
-                        )}
+                        {user.role === "Student" ? `${user.averageScore}%` : "N/A"}
                       </TableCell>
                       <TableCell>{user.joinDate}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
-                              <MoreVertical className="h-4 w-4" />
+                              <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
                             <DropdownMenuItem>
                               <Edit className="h-4 w-4 mr-2" />
-                              Edit User
+                              Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                              <Check className="h-4 w-4 mr-2" />
-                              Change Status
+                              {user.status === "Active" ? (
+                                <UserX className="h-4 w-4 mr-2" />
+                              ) : (
+                                <UserCheck className="h-4 w-4 mr-2" />
+                              )}
+                              {user.status === "Active" ? "Deactivate" : "Activate"}
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600">
+                            <DropdownMenuItem className="text-destructive">
                               <Trash className="h-4 w-4 mr-2" />
-                              Delete User
+                              Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
