@@ -9,22 +9,24 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { GraduationCap } from "lucide-react"
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    // TODO: Implement actual login logic
+    // TODO: Implement actual signup logic
     // For now, just simulate a delay and redirect
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    router.push("/")
+    router.push("/login")
   }
 
   return (
@@ -36,15 +38,26 @@ export default function LoginPage() {
               <div className="flex flex-col items-center justify-center space-y-2 text-center">
                 <div className="flex items-center gap-2">
                   <GraduationCap className="h-10 w-10 text-primary" />
-                  <h1 className="text-2xl font-bold tracking-tight">Welcome Back</h1>
+                  <h1 className="text-2xl font-bold tracking-tight">Create Account</h1>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Sign in to your SmartMe Test account
+                  Join SmartMe Test and start your learning journey
                 </p>
               </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -66,16 +79,26 @@ export default function LoginPage() {
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  />
+                </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign In"}
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-sm text-center text-muted-foreground">
-                Don't have an account?{" "}
-                <Link href="/signup" className="text-primary hover:underline">
-                  Sign up
+                Already have an account?{" "}
+                <Link href="/login" className="text-primary hover:underline">
+                  Sign in
                 </Link>
               </div>
             </CardFooter>
@@ -96,5 +119,4 @@ export default function LoginPage() {
       </footer>
     </div>
   )
-}
-
+} 

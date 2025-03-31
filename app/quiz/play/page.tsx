@@ -107,18 +107,6 @@ export default function PlayQuizPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <header className="border-b">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Link href="/">
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="h-8 w-8 text-primary" />
-                  <h1 className="text-2xl font-bold">SMARTME TEST</h1>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </header>
 
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -136,18 +124,7 @@ export default function PlayQuizPage() {
 
     return (
       <div className="min-h-screen flex flex-col">
-        <header className="border-b">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Link href="/">
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="h-8 w-8 text-primary" />
-                  <h1 className="text-2xl font-bold">SMARTME TEST</h1>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </header>
+        
 
         <main className="flex-1 py-12">
           <div className="container mx-auto px-4">
@@ -165,7 +142,7 @@ export default function PlayQuizPage() {
                       </div>
                     ) : (
                       <div className="h-24 w-24 rounded-full bg-amber-100 flex items-center justify-center">
-                        <Brain className="h-12 w-12 text-amber-500" />
+                        <GraduationCap className="h-12 w-12 text-amber-500" />
                       </div>
                     )}
                   </div>
@@ -219,27 +196,6 @@ export default function PlayQuizPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Link href="/">
-              <div className="flex items-center gap-2">
-                <GraduationCap className="h-8 w-8 text-primary" />
-                <h1 className="text-2xl font-bold">SMARTME TEST</h1>
-              </div>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Badge variant="outline" className="gap-1">
-              <Brain className="h-4 w-4" />
-              <span className="capitalize">{category}</span>
-            </Badge>
-            <Badge variant="outline" className="gap-1">
-              <span className="capitalize">{difficulty}</span>
-            </Badge>
-          </div>
-        </div>
-      </header>
 
       <main className="flex-1 py-12 bg-muted/30">
         <div className="container mx-auto px-4">

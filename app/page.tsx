@@ -7,39 +7,6 @@ import { Brain, Zap, Trophy, BarChart3, BookOpen, GraduationCap, School } from "
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold">SMARTME TEST</h1>
-          </div>
-          <nav className="hidden md:flex gap-6">
-            <Link href="/" className="font-medium hover:text-primary">
-              Home
-            </Link>
-            <Link href="/categories" className="font-medium hover:text-primary">
-              Subjects
-            </Link>
-            <Link href="/leaderboard" className="font-medium hover:text-primary">
-              Leaderboard
-            </Link>
-            <Link href="/profile" className="font-medium hover:text-primary">
-              Profile
-            </Link>
-          </nav>
-          <div className="flex gap-2">
-            <Link href="/login" passHref>
-              <Button variant="outline" as="a">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup" passHref>
-              <Button as="a">Sign Up</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative py-20 md:py-32 overflow-hidden">
@@ -53,8 +20,8 @@ export default function Home() {
                 SMARTME TEST provides challenging questions across various subjects, tailored for both JHS and SHS students for a personalized learning experience.
               </p>
               <div className="flex gap-4 pt-4">
-                <Link href="/quiz/new" passHref>
-                  <Button size="lg" className="gap-2" onClick={() => console.log("Start Quiz button clicked")}>
+                <Link href="/quiz/new">
+                  <Button size="lg" className="gap-2">
                     <Zap className="h-5 w-5" />
                     Start Academic Quiz
                   </Button>
