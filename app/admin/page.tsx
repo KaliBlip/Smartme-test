@@ -1,164 +1,181 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Users,
-  FileQuestion,
-  BarChart3,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  XCircle,
-  School,
-} from "lucide-react"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useRouter } from "next/navigation"
+import { useSupabaseAuth } from "@/components/providers/supabase-auth-provider"
+import { toast } from "sonner"
+import { Database } from "@/lib/supabase/types"
+
+type DashboardStats = {
+  totalUsers: number
+  activeUsers: number
+  totalQuizzes: number
+  totalQuestions: number
+  totalSubjects: number
+}
 
 export default function AdminDashboard() {
-  return (
-    <div className="space-y-6">
-      {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Questions</CardTitle>
-            <FileQuestion className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2,543</div>
-            <p className="text-xs text-muted-foreground">Added 145 this month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Quizzes Taken</CardTitle>
-            <School className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12,789</div>
-            <p className="text-xs text-muted-foreground">+23% from last month</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Score</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">76%</div>
-            <p className="text-xs text-muted-foreground">+2% from last month</p>
-          </CardContent>
-        </Card>
+  const router = useRouter()
+  const { profile } = useSupabaseAuth()
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalQuizzes: 0,
+    totalQuestions: 0,
+    totalSubjects: 0,
+  })
+  const [loading, setLoading] = useState(true)
+  const supabase = createClientComponentClient<Database>()
+
+  useEffect(() => {
+    if (profile?.role !== "admin") {
+      router.push("/")
+      return
+    }
+
+    const fetchStats = async () => {
+      try {
+        const [
+          { count: totalUsers },
+          { count: activeUsers },
+          { count: totalQuizzes },
+          { count: totalQuestions },
+          { count: totalSubjects },
+        ] = await Promise.all([
+          supabase.from("user_profiles").select("*", { count: "exact", head: true }),
+          supabase.from("user_profiles").select("*", { count: "exact", head: true }).eq("status", "active"),
+          supabase.from("quizzes").select("*", { count: "exact", head: true }),
+          supabase.from("questions").select("*", { count: "exact", head: true }),
+          supabase.from("subjects").select("*", { count: "exact", head: true }),
+        ])
+
+        setStats({
+          totalUsers: totalUsers || 0,
+          activeUsers: activeUsers || 0,
+          totalQuizzes: totalQuizzes || 0,
+          totalQuestions: totalQuestions || 0,
+          totalSubjects: totalSubjects || 0,
+        })
+      } catch (error) {
+        toast.error("Failed to fetch dashboard statistics")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [profile, router, supabase])
+
+  if (loading) {
+    return (
+      <div className="container py-10">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
       </div>
+    )
+  }
 
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common administrative tasks</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-2">
-            <Button variant="outline" className="justify-start">
-              <FileQuestion className="mr-2 h-4 w-4" />
-              Add New Question
-            </Button>
-            <Button variant="outline" className="justify-start">
-              <Users className="mr-2 h-4 w-4" />
-              Manage Users
-            </Button>
-            <Button variant="outline" className="justify-start">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              View Reports
-            </Button>
-          </CardContent>
-        </Card>
+  return (
+    <div className="container py-10">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground">
+            Overview of your quiz application
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest actions taken</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">New question added</p>
-                  <p className="text-xs text-muted-foreground">2 minutes ago</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Users className="h-4 w-4 text-primary" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">New user registered</p>
-                  <p className="text-xs text-muted-foreground">15 minutes ago</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <XCircle className="h-4 w-4 text-primary" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">Question reported</p>
-                  <p className="text-xs text-muted-foreground">1 hour ago</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats.activeUsers} active users
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Quizzes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalQuizzes}</div>
+              <p className="text-xs text-muted-foreground">
+                Completed by users
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Questions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalQuestions}</div>
+              <p className="text-xs text-muted-foreground">
+                Available questions
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Subjects</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalSubjects}</div>
+              <p className="text-xs text-muted-foreground">
+                Active subjects
+              </p>
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle>Performance Overview</CardTitle>
-            <CardDescription>Subject-wise statistics</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">Mathematics</p>
-                  <p className="text-sm text-muted-foreground">82%</p>
-                </div>
-                <div className="h-2 rounded-full bg-muted">
-                  <div className="h-full w-4/5 rounded-full bg-primary"></div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">Science</p>
-                  <p className="text-sm text-muted-foreground">75%</p>
-                </div>
-                <div className="h-2 rounded-full bg-muted">
-                  <div className="h-full w-3/4 rounded-full bg-primary"></div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">English</p>
-                  <p className="text-sm text-muted-foreground">68%</p>
-                </div>
-                <div className="h-2 rounded-full bg-muted">
-                  <div className="h-full w-2/3 rounded-full bg-primary"></div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>
+                Manage your application
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => router.push("/admin/users")}
+              >
+                Manage Users
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => router.push("/admin/subjects")}
+              >
+                Manage Subjects
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => router.push("/admin/questions")}
+              >
+                Manage Questions
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => router.push("/admin/quizzes")}
+              >
+                View Quizzes
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

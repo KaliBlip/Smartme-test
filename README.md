@@ -1,113 +1,233 @@
-# Smartme Test - Academic Quiz Application
+# ByteBattle Quiz App
 
-Smartme Test is an interactive academic quiz application designed to help students improve their knowledge across various subjects through structured multiple-choice quizzes. The application features an admin-managed question bank, where quiz content is manually uploaded and categorized by subject and educational level (JHS and SHS).
+A modern, responsive quiz application built with Next.js, TypeScript, and Shadcn/UI. The app features a comprehensive admin dashboard, quiz management system, and user-friendly interface for students.
 
-## Key Features
+## Features
 
-### User Roles & Authentication
+### 1. Authentication System
+- User registration and login
+- Role-based access control (Admin/Student)
+- Secure session management
+- Profile customization
 
-- **Admin:**
-  - Upload and manage multiple-choice questions (MCQs) with designated answers
-  - Categorize quizzes by subject and educational level (JHS and SHS)
-  - View student progress and leaderboard rankings
-  - Manage user accounts (approve, remove, or update student roles)
+### 2. Admin Dashboard
+- **Overview Statistics**
+  - Total users count
+  - Total questions count
+  - Quizzes taken
+  - Average scores
+  - Trend indicators
 
-- **Student/User:**
-  - Sign up and log in to take subject-based quizzes
-  - Select quizzes based on their education level (JHS or SHS)
-  - Track progress and view performance statistics
+- **Quick Actions**
+  - Add new questions
+  - Manage users
+  - View reports
+  - Access settings
 
-### Admin Dashboard
+- **Recent Activity Feed**
+  - New questions added
+  - User registrations
+  - Reported questions
+  - Timestamp tracking
 
-- Upload and organize quiz questions into categories (e.g., Mathematics, Science, English)
-- Edit or delete questions when needed
-- Monitor student performance and leaderboard rankings
-- Manage user accounts and permissions
+- **Performance Overview**
+  - Subject-wise statistics
+  - Progress tracking
+  - Performance metrics
 
-### Quiz Categories
+### 3. Question Management
+- **Question List**
+  - Search functionality
+  - Filter by level, subject, and difficulty
+  - Sort by date added
+  - Bulk actions
 
-- **JHS Subjects:**
-  - Mathematics
-  - Science
-  - English
-  - Social Studies
+- **Question Details**
+  - Question text
+  - Level (JHS/SHS)
+  - Subject
+  - Difficulty
+  - Time limit
+  - Date added
+  - Status indicators
 
-- **SHS Subjects:**
-  - Advanced Mathematics
-  - Science
-  - English Literature
-  - History
-  - Languages
-  - Arts & Literature
+- **Actions**
+  - Edit questions
+  - Delete questions
+  - Toggle status
+  - View details
 
-### Quiz Gameplay
+### 4. User Management
+- **User List**
+  - Search by name/email
+  - Filter by role, level, and status
+  - Sort by join date
+  - Bulk actions
 
-- Interactive multiple-choice question (MCQ) format
-- Real-time progress tracking during quizzes
-- Instant feedback after answering a question
+- **User Details**
+  - Name and email
+  - Role (Admin/Student)
+  - Education level
+  - Account status
+  - Join date
+  - Quiz statistics
 
-### Leaderboard System
+- **Actions**
+  - Edit user details
+  - Change user status
+  - Delete users
+  - View activity
 
-- Track top-performing students based on quiz scores
-- Separate leaderboards for JHS and SHS categories
-- Visual ranking indicators for top students
+### 5. Analytics & Reporting
+- **Key Metrics**
+  - Total users
+  - Total quizzes
+  - Average scores
+  - Completion rates
+  - Trend analysis
 
-### User Profiles
+- **Subject Performance**
+  - JHS vs SHS comparison
+  - Subject-wise breakdown
+  - Progress tracking
+  - Visual charts
 
-- Display personal statistics and quiz history
-- Show performance graphs to visualize progress
-- Allow students to review past quizzes and correct answers
+- **Quiz Duration Analysis**
+  - Time spent distribution
+  - Average completion time
+  - Performance correlation
 
-## Technology Stack
+### 6. Settings Management
+- **General Settings**
+  - Site name
+  - Site description
+  - Contact email
+  - Maintenance mode
 
-- **Frontend:** Next.js, React, Tailwind CSS
-- **UI Components:** Shadcn UI
-- **Styling:** Tailwind CSS with animations
-- **Data Management:** Mock data (ready for API integration)
+- **Security Settings**
+  - Two-factor authentication
+  - Session timeout
+  - IP blocking
+  - Session duration
 
-## Installation
+- **Notification Settings**
+  - Email notifications
+  - Push notifications
+  - Weekly reports
+  - Activity alerts
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/smartme-test.git
-   ```
+- **User Settings**
+  - Registration control
+  - Email verification
+  - Profile customization
+  - Login attempts
 
+### 7. Education Level Management
+- **JHS Configuration**
+  - Enable/disable level
+  - Default time limit
+  - Questions per quiz
+  - Passing score
+  - Subject management
+
+- **SHS Configuration**
+  - Enable/disable level
+  - Default time limit
+  - Questions per quiz
+  - Passing score
+  - Subject management
+
+### 8. Subject Management
+- **Subject List**
+  - Search functionality
+  - Filter by level
+  - Status indicators
+  - Quick actions
+
+- **Subject Details**
+  - Name and description
+  - Education level
+  - Question count
+  - Quiz count
+  - Status management
+
+### 9. UI/UX Features
+- **Responsive Design**
+  - Mobile-first approach
+  - Tablet optimization
+  - Desktop layouts
+  - Adaptive components
+
+- **Navigation**
+  - Sidebar navigation
+  - Breadcrumb trails
+  - Quick access menu
+  - Mobile menu
+
+- **Visual Feedback**
+  - Loading states
+  - Success/error messages
+  - Progress indicators
+  - Status badges
+
+- **Accessibility**
+  - Keyboard navigation
+  - Screen reader support
+  - High contrast mode
+  - Focus management
+
+## Technical Stack
+
+- **Frontend Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Shadcn/UI
+- **State Management**: React Hooks
+- **Routing**: Next.js App Router
+- **Authentication**: NextAuth.js
+- **Database**: (To be implemented)
+- **API**: (To be implemented)
+
+## Getting Started
+
+1. Clone the repository
 2. Install dependencies:
-   ```
-   cd smartme-test
+   ```bash
    npm install
+   # or
+   yarn install
+   # or
+   pnpm install
    ```
-
-3. Run the development server:
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
    ```
+4. Run the development server:
+   ```bash
    npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
    ```
+5. Open [http://localhost:3000](http://localhost:3000)
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+## Development
 
-## Project Structure
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run start`: Start production server
+- `npm run lint`: Run ESLint
+- `npm run format`: Format code with Prettier
 
-- `app/` - Next.js app router pages and components
-  - `admin/` - Admin dashboard and question management
-  - `categories/` - Subject categories for JHS and SHS
-  - `quiz/` - Quiz creation and gameplay
-  - `leaderboard/` - Leaderboards for JHS and SHS
-  - `profile/` - User profile and statistics
-- `components/` - Reusable UI components
-- `lib/` - Utilities and data services
-- `public/` - Static assets
+## Contributing
 
-## Admin Access
-
-To access the admin dashboard, navigate to `/admin` after starting the application.
-
-## Future Enhancements
-
-- Database integration for persistent storage
-- User authentication with role-based access control
-- Analytics dashboard for tracking student progress
-- Mobile application for on-the-go learning
-- Integration with school management systems
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 

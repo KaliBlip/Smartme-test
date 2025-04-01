@@ -1,333 +1,260 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { GraduationCap, User, BarChart3, Trophy, Calendar, ArrowUpRight } from "lucide-react"
-
-// Mock user data
-const userData = {
-  name: "Alex Johnson",
-  email: "alex@example.com",
-  joinDate: "Jan 2023",
-  totalScore: 9850,
-  quizzesTaken: 42,
-  averageScore: 85,
-  badges: ["Science Expert", "History Buff", "Quiz Master", "Perfect Score", "Speed Demon"],
-  recentQuizzes: [
-    { id: "1", category: "Science", score: 9, total: 10, date: "2023-03-01" },
-    { id: "2", category: "History", score: 8, total: 10, date: "2023-02-28" },
-    { id: "3", category: "Technology", score: 10, total: 10, date: "2023-02-25" },
-    { id: "4", category: "Geography", score: 7, total: 10, date: "2023-02-20" },
-  ],
-  categoryPerformance: [
-    { category: "Science", score: 92 },
-    { category: "History", score: 88 },
-    { category: "Technology", score: 95 },
-    { category: "Geography", score: 78 },
-    { category: "Entertainment", score: 82 },
-  ],
-}
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Switch } from "@/components/ui/switch"
+import { useSupabaseAuth } from "@/components/providers/supabase-auth-provider"
+import { toast } from "sonner"
+import { UserProfile, UserSettings } from "@/lib/supabase/types"
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState("overview")
+  const { profile, settings, updateProfile, updateSettings } = useSupabaseAuth()
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState<Partial<UserProfile>>({
+    name: profile?.name || "",
+    level: profile?.level || "n/a",
+  })
+  const [settingsData, setSettingsData] = useState<Partial<UserSettings>>({
+    email_notifications: settings?.email_notifications || false,
+    push_notifications: settings?.push_notifications || false,
+    weekly_report: settings?.weekly_report || false,
+    theme: settings?.theme || "system",
+  })
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      await updateProfile(formData)
+      toast.success("Profile updated successfully")
+    } catch (error) {
+      toast.error("Failed to update profile")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSettingsUpdate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      await updateSettings(settingsData)
+      toast.success("Settings updated successfully")
+    } catch (error) {
+      toast.error("Failed to update settings")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!profile) {
+    return (
+      <div className="container flex h-screen w-screen flex-col items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Profile Not Found</CardTitle>
+            <CardDescription>
+              Please log in to view your profile.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-1 py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            {/* Profile Header */}
-            <div className="bg-card rounded-xl p-6 shadow-sm mb-8 flex flex-col md:flex-row gap-6 items-center md:items-start">
-              <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-12 w-12 text-primary" />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-3xl font-bold">{userData.name}</h1>
-                <p className="text-muted-foreground">{userData.email}</p>
-                <div className="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
-                  <Badge variant="outline" className="gap-1">
-                    <Calendar className="h-3 w-3" />
-                    Joined {userData.joinDate}
-                  </Badge>
-                  <Badge variant="outline" className="gap-1">
-                    <Trophy className="h-3 w-3" />
-                    {userData.totalScore.toLocaleString()} points
-                  </Badge>
-                  <Badge variant="outline" className="gap-1">
-                    <BarChart3 className="h-3 w-3" />
-                    {userData.quizzesTaken} quizzes
-                  </Badge>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Link href="/quiz/new">
-                  <Button>Start New Quiz</Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Profile Tabs */}
-            <div className="flex border-b mb-8">
-              <button
-                className={`px-4 py-2 font-medium ${
-                  activeTab === "overview" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"
-                }`}
-                onClick={() => setActiveTab("overview")}
-              >
-                Overview
-              </button>
-              <button
-                className={`px-4 py-2 font-medium ${
-                  activeTab === "history" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"
-                }`}
-                onClick={() => setActiveTab("history")}
-              >
-                Quiz History
-              </button>
-              <button
-                className={`px-4 py-2 font-medium ${
-                  activeTab === "achievements" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"
-                }`}
-                onClick={() => setActiveTab("achievements")}
-              >
-                Achievements
-              </button>
-            </div>
-
-            {/* Tab Content */}
-            {activeTab === "overview" && (
-              <div className="grid md:grid-cols-2 gap-8">
-                {/* Stats Cards */}
-                <div className="grid grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">Total Score</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">{userData.totalScore.toLocaleString()}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">Quizzes Taken</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">{userData.quizzesTaken}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">Average Score</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">{userData.averageScore}%</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">Global Rank</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold">#42</div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Category Performance */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Category Performance</CardTitle>
-                    <CardDescription>Your average scores by category</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {userData.categoryPerformance.map((category) => (
-                        <div key={category.category}>
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm font-medium">{category.category}</span>
-                            <span className="text-sm font-medium">{category.score}%</span>
-                          </div>
-                          <div className="w-full bg-muted rounded-full h-2.5">
-                            <div
-                              className="bg-primary h-2.5 rounded-full"
-                              style={{ width: `${category.score}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Recent Quizzes */}
-                <Card className="md:col-span-2">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle>Recent Quizzes</CardTitle>
-                      <Link href="/profile/history">
-                        <Button variant="ghost" size="sm" className="gap-1">
-                          View All
-                          <ArrowUpRight className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {userData.recentQuizzes.map((quiz) => (
-                        <div key={quiz.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                          <div>
-                            <p className="font-medium">{quiz.category}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(quiz.date).toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold">
-                              {quiz.score}/{quiz.total}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {Math.round((quiz.score / quiz.total) * 100)}%
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Badges */}
-                <Card className="md:col-span-2">
-                  <CardHeader>
-                    <CardTitle>Achievements</CardTitle>
-                    <CardDescription>Badges you've earned through quizzing</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {userData.badges.map((badge) => (
-                        <Badge key={badge} variant="secondary" className="px-3 py-1">
-                          {badge}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {activeTab === "history" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quiz History</CardTitle>
-                  <CardDescription>All quizzes you've taken</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[...userData.recentQuizzes, ...userData.recentQuizzes].map((quiz, index) => (
-                      <div
-                        key={`${quiz.id}-${index}`}
-                        className="flex items-center justify-between p-4 bg-muted/50 rounded-lg"
-                      >
-                        <div>
-                          <p className="font-medium">{quiz.category}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(quiz.date).toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="font-bold">
-                              {quiz.score}/{quiz.total}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {Math.round((quiz.score / quiz.total) * 100)}%
-                            </p>
-                          </div>
-                          <Link href={`/quiz/results/${quiz.id}`}>
-                            <Button variant="outline" size="sm">
-                              View Details
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-center">
-                  <Button variant="outline">Load More</Button>
-                </CardFooter>
-              </Card>
-            )}
-
-            {activeTab === "achievements" && (
-              <div className="grid md:grid-cols-2 gap-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Earned Badges</CardTitle>
-                    <CardDescription>Achievements you've unlocked</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
-                      {userData.badges.map((badge) => (
-                        <div key={badge} className="bg-muted/50 rounded-lg p-4 text-center">
-                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                            <Trophy className="h-6 w-6 text-primary" />
-                          </div>
-                          <p className="font-medium">{badge}</p>
-                          <p className="text-xs text-muted-foreground mt-1">Earned on Feb 28, 2023</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Available Badges</CardTitle>
-                    <CardDescription>Achievements to unlock</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-4">
-                      {["Geography Pro", "Music Maestro", "Entertainment Guru", "100 Quizzes"].map((badge) => (
-                        <div key={badge} className="bg-muted/50 rounded-lg p-4 text-center opacity-60">
-                          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
-                            <Trophy className="h-6 w-6 text-muted-foreground" />
-                          </div>
-                          <p className="font-medium">{badge}</p>
-                          <p className="text-xs text-muted-foreground mt-1">Not yet earned</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
-
-      <footer className="bg-muted/30 border-t py-8">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <GraduationCap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">SMARTME TEST</span>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} SMARTME TEST. All rights reserved.
+    <div className="container py-10">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Profile</h1>
+          <p className="text-muted-foreground">
+            Manage your account settings and preferences
           </p>
         </div>
-      </footer>
+
+        <Tabs defaultValue="profile" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value="stats">Statistics</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="profile" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Information</CardTitle>
+                <CardDescription>
+                  Update your profile information
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleProfileUpdate} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="level">Education Level</Label>
+                    <select
+                      id="level"
+                      className="w-full rounded-md border border-input bg-background px-3 py-2"
+                      value={formData.level}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          level: e.target.value as "jhs" | "shs" | "n/a",
+                        })
+                      }
+                    >
+                      <option value="n/a">Not Applicable</option>
+                      <option value="jhs">Junior High School</option>
+                      <option value="shs">Senior High School</option>
+                    </select>
+                  </div>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? "Updating..." : "Update Profile"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Settings</CardTitle>
+                <CardDescription>
+                  Manage your account preferences
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSettingsUpdate} className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Email Notifications</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Receive email notifications about your account
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settingsData.email_notifications}
+                      onCheckedChange={(checked) =>
+                        setSettingsData({
+                          ...settingsData,
+                          email_notifications: checked,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Push Notifications</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Receive push notifications about your account
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settingsData.push_notifications}
+                      onCheckedChange={(checked) =>
+                        setSettingsData({
+                          ...settingsData,
+                          push_notifications: checked,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Weekly Report</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Receive a weekly summary of your progress
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settingsData.weekly_report}
+                      onCheckedChange={(checked) =>
+                        setSettingsData({
+                          ...settingsData,
+                          weekly_report: checked,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Theme</Label>
+                    <select
+                      className="w-full rounded-md border border-input bg-background px-3 py-2"
+                      value={settingsData.theme}
+                      onChange={(e) =>
+                        setSettingsData({
+                          ...settingsData,
+                          theme: e.target.value as "light" | "dark" | "system",
+                        })
+                      }
+                    >
+                      <option value="system">System</option>
+                      <option value="light">Light</option>
+                      <option value="dark">Dark</option>
+                    </select>
+                  </div>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? "Updating..." : "Update Settings"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="stats" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quiz Statistics</CardTitle>
+                <CardDescription>
+                  View your quiz performance statistics
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <div className="rounded-lg border p-4">
+                    <h3 className="text-sm font-medium">Quizzes Taken</h3>
+                    <p className="text-2xl font-bold">{profile.quizzes_taken || 0}</p>
+                  </div>
+                  <div className="rounded-lg border p-4">
+                    <h3 className="text-sm font-medium">Average Score</h3>
+                    <p className="text-2xl font-bold">
+                      {profile.average_score?.toFixed(1) || "0"}%
+                    </p>
+                  </div>
+                  <div className="rounded-lg border p-4">
+                    <h3 className="text-sm font-medium">Total Score</h3>
+                    <p className="text-2xl font-bold">{profile.total_score || 0}</p>
+                  </div>
+                  <div className="rounded-lg border p-4">
+                    <h3 className="text-sm font-medium">Last Quiz</h3>
+                    <p className="text-2xl font-bold">
+                      {profile.last_quiz_date
+                        ? new Date(profile.last_quiz_date).toLocaleDateString()
+                        : "Never"}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   )
 }
