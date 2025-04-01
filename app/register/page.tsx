@@ -26,6 +26,7 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     name: "",
+    school: "",
     level: "jhs" as "jhs" | "shs" | "n/a",
   })
 
@@ -39,7 +40,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      await signUp(formData.email, formData.password, formData.name)
+      await signUp(formData.email, formData.password, formData.name, formData.school)
       toast.success("Registration successful! Please check your email to verify your account.")
       router.push("/login")
     } catch (error) {
@@ -68,6 +69,18 @@ export default function RegisterPage() {
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="school">School Name</Label>
+              <Input
+                id="school"
+                placeholder="Your School Name"
+                value={formData.school}
+                onChange={(e) =>
+                  setFormData({ ...formData, school: e.target.value })
                 }
                 required
               />

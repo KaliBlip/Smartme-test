@@ -4,6 +4,7 @@ CREATE TABLE user_profiles (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
+  school TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('student', 'admin')),
   status TEXT NOT NULL CHECK (status IN ('active', 'pending', 'inactive')),
   level TEXT NOT NULL CHECK (level IN ('jhs', 'shs', 'n/a')),

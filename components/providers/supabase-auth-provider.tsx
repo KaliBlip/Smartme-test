@@ -12,7 +12,7 @@ type SupabaseAuthContextType = {
   settings: UserSettings | null
   stats: UserStats | null
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string, name: string) => Promise<void>
+  signUp: (email: string, password: string, name: string, school: string) => Promise<void>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
   updatePassword: (newPassword: string) => Promise<void>
@@ -83,7 +83,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
     if (error) throw error
   }
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string, school: string) => {
     const { error: signUpError, data } = await supabase.auth.signUp({
       email,
       password,
@@ -101,6 +101,7 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
         user_id: data.user.id,
         name,
         email,
+        school,
         role: "student",
         status: "pending",
         level: "n/a",

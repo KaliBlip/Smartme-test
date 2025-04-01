@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
   try {
-    const { email, password, name } = await request.json()
+    const { email, password, name, school } = await request.json()
     const supabase = createRouteHandlerClient({ cookies })
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       user_id: authData.user.id,
       name,
       email,
+      school,
       role: "student",
       status: "pending",
       level: "n/a",
