@@ -58,8 +58,9 @@ jobs:
         run: |
           # Create directory if it doesn't exist
           mkdir -p app/admin/questions/[id]
+          mkdir -p app/admin/subjects/[id]
           
-          # Create or update the page.tsx file with generateStaticParams
+          # Create or update the questions page.tsx file with generateStaticParams
           cat > app/admin/questions/[id]/page.tsx << 'EOL'
           import { notFound } from "next/navigation"
           
@@ -71,6 +72,23 @@ jobs:
           }
           
           export default function QuestionPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the subjects page.tsx file with generateStaticParams
+          cat > app/admin/subjects/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all subject IDs and return them
+            return []
+          }
+          
+          export default function SubjectPage({ params }: { params: { id: string } }) {
             // For static export, we'll just show a not found page
             return notFound()
           }
