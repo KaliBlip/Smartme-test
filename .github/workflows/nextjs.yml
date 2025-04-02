@@ -255,6 +255,19 @@ jobs:
             return notFound()
           }
           EOL
+          
+          # Verify the categories page.tsx file exists and has the correct content
+          echo "Verifying categories/[id]/page.tsx..."
+          if [ ! -f "app/categories/[id]/page.tsx" ]; then
+            echo "Error: categories/[id]/page.tsx was not created"
+            exit 1
+          fi
+          
+          # Check if the file contains generateStaticParams
+          if ! grep -q "generateStaticParams" "app/categories/[id]/page.tsx"; then
+            echo "Error: categories/[id]/page.tsx does not contain generateStaticParams"
+            exit 1
+          fi
       
       - name: Update next.config.mjs
         run: |
@@ -297,6 +310,12 @@ jobs:
           echo "NEXT_PUBLIC_BASE_PATH: ${{ github.event.repository.name }}"
           echo "NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' && 'Set' || 'Not set' }}"
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && 'Set' || 'Not set' }}"
+          
+          # Verify the file exists before building
+          if [ ! -f "app/categories/[id]/page.tsx" ]; then
+            echo "Error: categories/[id]/page.tsx is missing before build"
+            exit 1
+          fi
           
           npx next build
           
