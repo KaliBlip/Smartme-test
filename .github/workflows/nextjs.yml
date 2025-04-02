@@ -54,9 +54,9 @@ jobs:
           npm ci --legacy-peer-deps
           npm install date-fns@2.30.0 --save --legacy-peer-deps
       
-      - name: Create next.config.js with output settings
+      - name: Update next.config.mjs
         run: |
-          cat > next.config.js << 'EOL'
+          cat > next.config.mjs << 'EOL'
           /** @type {import('next').NextConfig} */
           const nextConfig = {
             output: 'export',
@@ -86,12 +86,18 @@ jobs:
               ignoreDuringBuilds: true,
             },
           }
-          module.exports = nextConfig
+          export default nextConfig
           EOL
         
       - name: Build with Next.js
         run: |
+          echo "Building with Next.js..."
+          echo "NEXT_PUBLIC_BASE_PATH: ${{ github.event.repository.name }}"
+          echo "NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' && 'Set' || 'Not set' }}"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && 'Set' || 'Not set' }}"
+          
           npx next build
+          
           if [ $? -ne 0 ]; then
             echo "Build failed. Checking for common issues..."
             if [ -d ".next" ]; then
