@@ -22,7 +22,9 @@ export async function middleware(request: NextRequest) {
     "/quiz/play",
     "/api/quiz",
     "/api/categories",
-    "/api/leaderboard"
+    "/api/leaderboard",
+    "/forgot-password",
+    "/reset-password"
   ]
   const isPublicPath = publicPaths.some(path => request.nextUrl.pathname.startsWith(path))
 

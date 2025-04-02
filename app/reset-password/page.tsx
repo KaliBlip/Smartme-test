@@ -12,27 +12,10 @@ import { toast } from "sonner"
 export default function ResetPasswordPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { resetPassword, updatePassword, verifyEmail } = useSupabaseAuth()
+  const { updatePassword, verifyEmail } = useSupabaseAuth()
   const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [isResetMode, setIsResetMode] = useState(true)
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    try {
-      await resetPassword(email)
-      toast.success("Password reset instructions sent to your email")
-      setIsResetMode(false)
-    } catch (error) {
-      toast.error("Failed to send reset instructions")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -68,59 +51,35 @@ export default function ResetPasswordPage() {
         <CardHeader>
           <CardTitle>Reset Password</CardTitle>
           <CardDescription>
-            {isResetMode
-              ? "Enter your email to receive reset instructions"
-              : "Enter your new password"}
+            Enter your new password
           </CardDescription>
         </CardHeader>
-        <form onSubmit={isResetMode ? handleResetPassword : handleUpdatePassword}>
+        <form onSubmit={handleUpdatePassword}>
           <CardContent className="space-y-4">
-            {isResetMode ? (
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">New Password</Label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading
-                ? isResetMode
-                  ? "Sending instructions..."
-                  : "Updating password..."
-                : isResetMode
-                ? "Send Reset Instructions"
-                : "Update Password"}
+              {loading ? "Updating password..." : "Update Password"}
             </Button>
             <p className="text-sm text-muted-foreground text-center">
               Remember your password?{" "}
