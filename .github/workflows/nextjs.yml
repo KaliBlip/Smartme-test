@@ -1,5 +1,5 @@
-# Workflow for building and deploying the ByteBattle Quiz application to GitHub Pages
-name: Deploy ByteBattle Quiz to Pages
+# Workflow for building and deploying the Smartme Test application to GitHub Pages
+name: Deploy Smartme Test to Pages
 
 on:
   # Runs on pushes targeting the default branch
