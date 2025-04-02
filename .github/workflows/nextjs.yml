@@ -56,9 +56,13 @@ jobs:
       
       - name: Fix static export issues
         run: |
-          # Create directory if it doesn't exist
+          # Create directories if they don't exist
           mkdir -p app/admin/questions/[id]
           mkdir -p app/admin/subjects/[id]
+          mkdir -p app/admin/users/[id]
+          mkdir -p app/admin/education/[id]
+          mkdir -p app/admin/settings/[id]
+          mkdir -p app/admin/analytics/[id]
           
           # Create or update the questions page.tsx file with generateStaticParams
           cat > app/admin/questions/[id]/page.tsx << 'EOL'
@@ -89,6 +93,74 @@ jobs:
           }
           
           export default function SubjectPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the users page.tsx file with generateStaticParams
+          cat > app/admin/users/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all user IDs and return them
+            return []
+          }
+          
+          export default function UserPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the education page.tsx file with generateStaticParams
+          cat > app/admin/education/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all education IDs and return them
+            return []
+          }
+          
+          export default function EducationPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the settings page.tsx file with generateStaticParams
+          cat > app/admin/settings/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all setting IDs and return them
+            return []
+          }
+          
+          export default function SettingPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the analytics page.tsx file with generateStaticParams
+          cat > app/admin/analytics/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all analytics IDs and return them
+            return []
+          }
+          
+          export default function AnalyticsPage({ params }: { params: { id: string } }) {
             // For static export, we'll just show a not found page
             return notFound()
           }
