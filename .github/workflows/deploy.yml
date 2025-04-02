@@ -1,5 +1,5 @@
-# Workflow for building and deploying the Smartme Test academic quiz application to GitHub Pages
-name: Deploy Smartme Test to Pages
+# Workflow for building and deploying the ByteBattle Quiz application to GitHub Pages
+name: Deploy ByteBattle Quiz to Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -45,7 +45,7 @@ jobs:
             echo "Unable to determine package manager"
             exit 1
           fi
-          
+            
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -67,8 +67,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
             
       - name: Install dependencies
-        # Use --legacy-peer-deps to handle dependency conflicts (especially with date-fns and react-day-picker)
-        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }} --legacy-peer-deps
+        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       
       - name: Create next.config.js with output settings
         run: |
@@ -78,6 +77,14 @@ jobs:
             output: 'export',
             images: {
               unoptimized: true,
+              remotePatterns: [
+                {
+                  protocol: 'https',
+                  hostname: '**.supabase.co',
+                  port: '',
+                  pathname: '/**',
+                },
+              ],
             },
             trailingSlash: true,
             basePath: process.env.NEXT_PUBLIC_BASE_PATH ? `/${process.env.NEXT_PUBLIC_BASE_PATH}` : '',
@@ -103,6 +110,8 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: ${{ github.event.repository.name }}
           NEXT_TELEMETRY_DISABLED: 1
           NEXT_IGNORE_TYPE_ERROR: true
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           CI: false # Allow the build to continue even if there are warnings
       
       - name: Upload artifact
