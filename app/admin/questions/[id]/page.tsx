@@ -22,6 +22,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 type Question = Database["public"]["Tables"]["questions"]["Row"]
 type Subject = Database["public"]["Tables"]["subjects"]["Row"]
 
+// This function is required for static export
+export async function generateStaticParams() {
+  // For static export, we'll return an empty array
+  // In a real app, you would fetch all question IDs and return them
+  return []
+}
+
 export default function EditQuestionPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const { profile } = useSupabaseAuth()
