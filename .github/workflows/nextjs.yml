@@ -63,6 +63,11 @@ jobs:
           mkdir -p app/admin/education/[id]
           mkdir -p app/admin/settings/[id]
           mkdir -p app/admin/analytics/[id]
+          mkdir -p app/quiz/play/[id]
+          mkdir -p app/quiz/new/[id]
+          mkdir -p app/profile/[id]
+          mkdir -p app/leaderboard/[id]
+          mkdir -p app/categories/[id]
           
           # Create or update the questions page.tsx file with generateStaticParams
           cat > app/admin/questions/[id]/page.tsx << 'EOL'
@@ -161,6 +166,91 @@ jobs:
           }
           
           export default function AnalyticsPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the quiz play page.tsx file with generateStaticParams
+          cat > app/quiz/play/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all quiz IDs and return them
+            return []
+          }
+          
+          export default function QuizPlayPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the quiz new page.tsx file with generateStaticParams
+          cat > app/quiz/new/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all quiz IDs and return them
+            return []
+          }
+          
+          export default function QuizEditPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the profile page.tsx file with generateStaticParams
+          cat > app/profile/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all user IDs and return them
+            return []
+          }
+          
+          export default function UserProfilePage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the leaderboard page.tsx file with generateStaticParams
+          cat > app/leaderboard/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all leaderboard category IDs and return them
+            return []
+          }
+          
+          export default function LeaderboardCategoryPage({ params }: { params: { id: string } }) {
+            // For static export, we'll just show a not found page
+            return notFound()
+          }
+          EOL
+          
+          # Create or update the categories page.tsx file with generateStaticParams
+          cat > app/categories/[id]/page.tsx << 'EOL'
+          import { notFound } from "next/navigation"
+          
+          // This function is required for static export
+          export function generateStaticParams() {
+            // Return an empty array for static export
+            // In a real app, you would fetch all category IDs and return them
+            return []
+          }
+          
+          export default function CategoryPage({ params }: { params: { id: string } }) {
             // For static export, we'll just show a not found page
             return notFound()
           }
