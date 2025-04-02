@@ -24,7 +24,7 @@ export function NavbarWrapper() {
 
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/quizzes", label: "Quizzes" },
+    { href: "/categories", label: "Categories" },
     { href: "/leaderboard", label: "Leaderboard" },
     ...(user ? [{ href: "/profile", label: "Profile" }] : []),
   ]
@@ -92,7 +92,7 @@ export function NavbarWrapper() {
                   <Link href="/login">Login</Link>
                 </Button>
                 <Button asChild>
-                  <Link href="/signup">Sign up</Link>
+                  <Link href="/register">Sign up</Link>
                 </Button>
               </div>
             )}
@@ -128,7 +128,7 @@ export function NavbarWrapper() {
                   Login
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/register"
                   className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

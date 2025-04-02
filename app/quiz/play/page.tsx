@@ -4,21 +4,30 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Brain, Clock, ArrowRight, CheckCircle, XCircle, GraduationCap } from "lucide-react"
+import { Brain, Clock, ArrowRight, CheckCircle, XCircle, GraduationCap, Share2, BookOpen, Volume2, RotateCcw } from "lucide-react"
 import { generateQuestions } from "@/lib/quiz-generator"
 import type { Question } from "@/lib/types"
+import { useTheme } from "next-themes"
+import { useToast } from "@/components/ui/use-toast"
+import { QuizSwipe } from "@/components/quiz-swipe"
+import { useMediaQuery } from "@/app/hooks/use-media-query"
+import { playSound } from "@/lib/sound"
 
 export default function PlayQuizPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { theme, setTheme } = useTheme()
+  const { toast } = useToast()
+  const isMobile = useMediaQuery("(max-width: 768px)")
 
   const category = searchParams.get("category") || "general"
   const difficulty = searchParams.get("difficulty") || "medium"
   const count = Number.parseInt(searchParams.get("count") || "10", 10)
   const timeLimit = Number.parseInt(searchParams.get("time") || "60", 10)
+  const isStudyMode = searchParams.get("mode") === "study"
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -28,6 +37,8 @@ export default function PlayQuizPage() {
   const [timeRemaining, setTimeRemaining] = useState(timeLimit)
   const [quizCompleted, setQuizCompleted] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [hapticEnabled, setHapticEnabled] = useState(true)
 
   // Generate questions on component mount
   useEffect(() => {
@@ -73,17 +84,35 @@ export default function PlayQuizPage() {
     setSelectedAnswer(answer)
   }
 
-  const handleAnswerSubmit = (answer: string | null) => {
-    if (isAnswerSubmitted || !currentQuestion) return
+  // Handle answer submission with new features
+  const handleAnswerSubmit = async (answer: string | null) => {
+    if (!selectedAnswer || isAnswerSubmitted) return
 
-    const finalAnswer = answer || selectedAnswer
-    const isCorrect = finalAnswer === currentQuestion.correctAnswer
+    setIsAnswerSubmitted(true)
+    const isCorrect = selectedAnswer === currentQuestion?.correctAnswer
+
+    if (soundEnabled) {
+      playSound(isCorrect ? "correct" : "incorrect")
+    }
+
+    if (hapticEnabled && "vibrate" in navigator) {
+      navigator.vibrate(isCorrect ? [50] : [100, 50, 100])
+    }
 
     if (isCorrect) {
       setScore((prev) => prev + 1)
+      toast({
+        title: "Correct!",
+        description: "Well done!",
+        variant: "default",
+      })
+    } else {
+      toast({
+        title: "Incorrect",
+        description: `The correct answer was: ${currentQuestion?.correctAnswer}`,
+        variant: "destructive",
+      })
     }
-
-    setIsAnswerSubmitted(true)
 
     // Move to next question after a delay
     setTimeout(() => {
@@ -94,8 +123,39 @@ export default function PlayQuizPage() {
         setTimeRemaining(timeLimit)
       } else {
         setQuizCompleted(true)
+        playSound('complete')
       }
     }, 1500)
+  }
+
+  // Share results
+  const shareResults = async () => {
+    const shareText = `I scored ${score}/${questions.length} (${Math.round((score / questions.length) * 100)}%) on the ${category} quiz! Can you beat my score?`
+    const shareUrl = window.location.href
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Quiz Results",
+          text: shareText,
+          url: shareUrl,
+        })
+      } catch (err) {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`)
+        toast({
+          title: "Results copied!",
+          description: "Quiz results have been copied to your clipboard.",
+        })
+      }
+    } else {
+      // Fallback to clipboard
+      await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`)
+      toast({
+        title: "Results copied!",
+        description: "Quiz results have been copied to your clipboard.",
+      })
+    }
   }
 
   const formatTime = (seconds: number) => {
@@ -179,12 +239,29 @@ export default function PlayQuizPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col sm:flex-row gap-4">
-                  <Button variant="outline" className="w-full sm:w-auto" onClick={() => router.push("/quiz/new")}>
-                    New Quiz
-                  </Button>
-                  <Button className="w-full sm:w-auto" onClick={() => router.push("/")}>
-                    Back to Home
-                  </Button>
+                  <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                    <Button 
+                      variant="outline" 
+                      className="w-full sm:w-auto" 
+                      onClick={() => router.push("/quiz/new")}
+                    >
+                      New Quiz
+                    </Button>
+                    <Button 
+                      className="w-full sm:w-auto" 
+                      onClick={() => router.push("/")}
+                    >
+                      Back to Home
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full sm:w-auto gap-2" 
+                      onClick={() => router.push(`/quiz/new?mode=study&category=${category}`)}
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      Study Mode
+                    </Button>
+                  </div>
                 </CardFooter>
               </Card>
             </div>
@@ -211,7 +288,7 @@ export default function PlayQuizPage() {
                 <span className="text-sm text-muted-foreground">Score:</span>
                 <Badge>{score}</Badge>
               </div>
-              {timeLimit > 0 && (
+              {timeLimit > 0 && !isStudyMode && (
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className={`font-mono ${timeRemaining < 10 ? "text-destructive animate-pulse" : ""}`}>
@@ -224,52 +301,128 @@ export default function PlayQuizPage() {
             <Progress value={(currentQuestionIndex / questions.length) * 100} className="mb-8" />
 
             {currentQuestion && (
-              <Card className="mb-8">
-                <CardHeader>
-                  <CardTitle className="text-xl">{currentQuestion.question}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4">
-                    {currentQuestion.options.map((option) => {
-                      const isSelected = selectedAnswer === option
-                      const isCorrect = isAnswerSubmitted && option === currentQuestion.correctAnswer
-                      const isWrong = isAnswerSubmitted && isSelected && option !== currentQuestion.correctAnswer
+              <QuizSwipe
+                onSwipeLeft={() => {
+                  if (currentQuestionIndex < questions.length - 1 && isAnswerSubmitted) {
+                    setCurrentQuestionIndex((prev) => prev + 1)
+                    setSelectedAnswer(null)
+                    setIsAnswerSubmitted(false)
+                    setTimeRemaining(timeLimit)
+                  }
+                }}
+                onSwipeRight={() => {
+                  if (currentQuestionIndex > 0 && isAnswerSubmitted) {
+                    setCurrentQuestionIndex((prev) => prev - 1)
+                    setSelectedAnswer(null)
+                    setIsAnswerSubmitted(false)
+                    setTimeRemaining(timeLimit)
+                  }
+                }}
+              >
+                <Card className="mb-8">
+                  <CardHeader>
+                    <CardTitle className="text-xl">{currentQuestion.question}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4">
+                      {currentQuestion.options.map((option) => {
+                        const isSelected = selectedAnswer === option
+                        const isCorrect = isAnswerSubmitted && option === currentQuestion.correctAnswer
+                        const isWrong = isAnswerSubmitted && isSelected && option !== currentQuestion.correctAnswer
 
-                      return (
+                        return (
+                          <Button
+                            key={option}
+                            variant={isSelected ? "default" : "outline"}
+                            className={`h-auto py-4 px-6 justify-start text-left transition-all duration-300 ${
+                              isCorrect
+                                ? "bg-green-500 hover:bg-green-500 text-white scale-105"
+                                : isWrong
+                                  ? "bg-red-500 hover:bg-red-500 text-white scale-105"
+                                  : ""
+                            }`}
+                            onClick={() => handleAnswerSelect(option)}
+                            disabled={isAnswerSubmitted}
+                          >
+                            {option}
+                          </Button>
+                        )
+                      })}
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setSoundEnabled(!soundEnabled)}
+                        className={soundEnabled ? "text-primary" : "text-muted-foreground"}
+                      >
+                        <Volume2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setHapticEnabled(!hapticEnabled)}
+                        className={hapticEnabled ? "text-primary" : "text-muted-foreground"}
+                      >
+                        <span className="text-lg">📳</span>
+                      </Button>
+                    </div>
+                    {isMobile ? (
+                      <div className="flex items-center gap-2">
                         <Button
-                          key={option}
-                          variant={isSelected ? "default" : "outline"}
-                          className={`h-auto py-4 px-6 justify-start text-left ${
-                            isCorrect
-                              ? "bg-green-500 hover:bg-green-500 text-white"
-                              : isWrong
-                                ? "bg-red-500 hover:bg-red-500 text-white"
-                                : ""
-                          }`}
-                          onClick={() => handleAnswerSelect(option)}
-                          disabled={isAnswerSubmitted}
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            if (currentQuestionIndex > 0 && isAnswerSubmitted) {
+                              setCurrentQuestionIndex((prev) => prev - 1)
+                              setSelectedAnswer(null)
+                              setIsAnswerSubmitted(false)
+                              setTimeRemaining(timeLimit)
+                            }
+                          }}
+                          disabled={currentQuestionIndex === 0 || !isAnswerSubmitted}
                         >
-                          <div className="flex items-center gap-2 w-full">
-                            <span className="flex-1">{option}</span>
-                            {isCorrect && <CheckCircle className="h-5 w-5" />}
-                            {isWrong && <XCircle className="h-5 w-5" />}
-                          </div>
+                          ←
                         </Button>
-                      )
-                    })}
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    className="w-full gap-2"
-                    onClick={() => handleAnswerSubmit(selectedAnswer)}
-                    disabled={!selectedAnswer || isAnswerSubmitted}
-                  >
-                    {isAnswerSubmitted ? "Next Question" : "Submit Answer"}
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </CardFooter>
-              </Card>
+                        <Button
+                          onClick={() => handleAnswerSubmit(null)}
+                          disabled={!selectedAnswer || isAnswerSubmitted}
+                          className="gap-2"
+                        >
+                          {isAnswerSubmitted ? "Next" : "Submit"}
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            if (currentQuestionIndex < questions.length - 1 && isAnswerSubmitted) {
+                              setCurrentQuestionIndex((prev) => prev + 1)
+                              setSelectedAnswer(null)
+                              setIsAnswerSubmitted(false)
+                              setTimeRemaining(timeLimit)
+                            }
+                          }}
+                          disabled={currentQuestionIndex === questions.length - 1 || !isAnswerSubmitted}
+                        >
+                          →
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={() => handleAnswerSubmit(null)}
+                        disabled={!selectedAnswer || isAnswerSubmitted}
+                        className="gap-2"
+                      >
+                        {isAnswerSubmitted ? "Next Question" : "Submit Answer"}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </CardFooter>
+                </Card>
+              </QuizSwipe>
             )}
           </div>
         </div>
