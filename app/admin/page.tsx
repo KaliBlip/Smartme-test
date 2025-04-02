@@ -19,7 +19,7 @@ type DashboardStats = {
 
 export default function AdminDashboard() {
   const router = useRouter()
-  const { profile } = useSupabaseAuth()
+  const { profile, loading: authLoading } = useSupabaseAuth()
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -31,7 +31,14 @@ export default function AdminDashboard() {
   const supabase = createClientComponentClient<Database>()
 
   useEffect(() => {
-    if (profile?.role !== "admin") {
+    if (authLoading) return
+
+    if (!profile) {
+      router.push("/login")
+      return
+    }
+
+    if (profile.role !== "admin") {
       router.push("/")
       return
     }
@@ -67,9 +74,9 @@ export default function AdminDashboard() {
     }
 
     fetchStats()
-  }, [profile, router, supabase])
+  }, [profile, router, supabase, authLoading])
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="container py-10">
         <div className="flex items-center justify-center">
@@ -169,9 +176,9 @@ export default function AdminDashboard() {
               <Button
                 variant="outline"
                 className="w-full justify-start"
-                onClick={() => router.push("/admin/quizzes")}
+                onClick={() => router.push("/admin/analytics")}
               >
-                View Quizzes
+                View Analytics
               </Button>
             </CardContent>
           </Card>

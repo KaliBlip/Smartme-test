@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
   LayoutDashboard,
@@ -17,6 +17,8 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { useSupabaseAuth } from "@/components/providers/supabase-auth-provider"
+import { toast } from "sonner"
 
 const sidebarItems = [
   {
@@ -37,10 +39,6 @@ const sidebarItems = [
         title: "Add Question",
         href: "/admin/questions/new",
       },
-      {
-        title: "Categories",
-        href: "/admin/questions/categories",
-      },
     ],
   },
   {
@@ -52,49 +50,17 @@ const sidebarItems = [
         title: "All Users",
         href: "/admin/users",
       },
-      {
-        title: "Add User",
-        href: "/admin/users/new",
-      },
-      {
-        title: "Roles",
-        href: "/admin/users/roles",
-      },
     ],
   },
   {
     title: "Analytics",
     href: "/admin/analytics",
     icon: BarChart3,
-    children: [
-      {
-        title: "Overview",
-        href: "/admin/analytics",
-      },
-      {
-        title: "Performance",
-        href: "/admin/analytics/performance",
-      },
-      {
-        title: "Reports",
-        href: "/admin/analytics/reports",
-      },
-    ],
   },
   {
     title: "Education Levels",
     href: "/admin/education",
     icon: School,
-    children: [
-      {
-        title: "JHS",
-        href: "/admin/education/jhs",
-      },
-      {
-        title: "SHS",
-        href: "/admin/education/shs",
-      },
-    ],
   },
   {
     title: "Subjects",
@@ -114,7 +80,23 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { signOut } = useSupabaseAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await signOut()
+      toast.success("Logged out successfully")
+      router.push("/login")
+    } catch (error) {
+      toast.error("Failed to log out")
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -196,7 +178,13 @@ export default function AdminLayout({
           <h1 className="font-semibold">
             {sidebarItems.find((item) => pathname === item.href || pathname?.startsWith(item.href + "/"))?.title}
           </h1>
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-2"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
             <LogOut className="h-4 w-4" />
             <span className="hidden sm:inline">Logout</span>
           </Button>
